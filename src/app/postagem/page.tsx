@@ -1,4 +1,5 @@
 'use client'
+import { mandarPostagem } from "@/api/postagem";
 import InputText from "@/components/input-text/InputText";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
@@ -6,6 +7,7 @@ import { useState } from "react";
 export default function Postagem() {
 
     const [file, setFile] = useState<File>()
+    const [legenda, setLegenda] = useState<string>("")
     const [url, setUrl] = useState<string>("")
 
     const setarFile = (file: FileList | null) => {
@@ -21,7 +23,14 @@ export default function Postagem() {
     }
 
     const mandarPublicacao = async () => {
-        console.log(file)
+        const formData = new FormData()
+        const obj = {
+            legenda: legenda,
+            usuarioId: 1
+        }
+        formData.append("dto", new Blob([JSON.stringify(obj)], { type: 'application/json' }))
+        file && formData.append("file", file)
+        const reponse = mandarPostagem(formData);
     }
 
     return (
@@ -29,7 +38,11 @@ export default function Postagem() {
             <section className="flex flex-col items-center w-[70%] my-10 rounded mx-auto border-2 border-blue-700">
                 <h1 className="text-3xl my-12">Faça upload do seu meme</h1>
                 <div className="w-[80%] mx-auto">
-                    <InputText placeholder="Titulo da publicação" />
+                    <InputText 
+                        placeholder="Titulo da publicação" 
+                        value={legenda}
+                        onChange={(e)=> setLegenda(e.target.value)}    
+                    />
 
                     <div className="my-12">
                         <p className="text-xl mb-2">Imagem:</p>
